@@ -1,0 +1,16 @@
+{
+  "name": "pisapsd",
+  "version": "1.0.0",
+  "description": "Domototzació del pis d'APSD",
+  "main": "scripts/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "domotica",
+    "raspberry",
+    "arduino"
+  ],
+  "author": "Juan Segura",
+  "license": "ISC"
+}

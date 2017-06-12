@@ -1,0 +1,252 @@
+var valoresArduinos=[
+	{
+		arduino:"A",
+		descrip:"entrada-huella",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "",
+				nombre:"entr-aut-huella",
+				descrip:"Autentificación huella",
+				sensor:1
+			},
+			{
+				codigo:9,
+				nombre:"entr-huella-puerta",
+				descrip:"Cerradura puerta",
+				sensor:0
+			}
+		]
+	},
+	{
+		arduino:"B",
+		descrip:"entrada-teclado",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "",
+				nombre:"entr-aut-teclado",
+				descrip:"Autentificación teclado",
+				sensor:1
+			},
+			{
+				codigo:9,
+				nombre:"entr-teclado-puerta",
+				descrip:"Cerradura puerta",
+				sensor:0
+			}
+		]
+	},
+	{
+		arduino:"C",
+		descrip:"entrada-RFID",
+		maczb: "0013A20040D9679C",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "",
+				nombre:"entr-aut-rfid",
+				descrip:"Autentificación RFID",
+				sensor:1
+			},
+			{
+				codigo:9,
+				nombre:"entr-rfid-puerta",
+				descrip:"Cerradura puerta",
+				sensor:0
+			}
+		]
+	},
+	{
+		arduino:2,
+		descrip:"cocina-fregadero",
+		maczb: "0013A20040F2A7B4",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "activo",
+				nombre:"coci-freg-humedad",
+				descrip:"Humedad fregadero",
+				sensor:1
+			},
+			{
+				codigo:2,
+				alarma: "tiempo",
+				limite: 8,
+				nombre:"coci-freg-caudal",
+				descrip:"Caudal fregadero",
+				sensor:1
+			},
+			{
+				codigo:3,
+				alarma: "valor",
+				nombre:"coci-freg-temp",
+				descrip:"Temperatura grifo",
+				sensor:1
+			},
+			{
+				codigo:9,
+				nombre:"coci-freg-grifo",
+				descrip:"Electroválvula grifo",
+				sensor:0
+			}
+		]
+	},
+	{
+		arduino:3,
+		descrip:"cocina-techo",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "valor",
+				nombre:"coci-techo-temp",
+				descrip:"Temperatura cocina",
+				limite: 30,
+				sensor:1
+			},
+			{
+				codigo:2,
+				alarma: "movimiento",
+				nombre:"coci-techo-mov",
+				descrip:"Presencia cocina",
+				sensor:1
+			},
+			{
+				codigo:3,
+				alarma: "activo",
+				nombre:"coci-techo-llama",
+				descrip:"Llama cocina",
+
+				sensor:1
+			},
+			{
+				codigo:4,
+				alarma: "valor",
+				nombre:"coci-techo-gas",
+				descrip:"Gas cocina",
+				limite: 150,
+				sensor:1
+			}
+		]
+	},
+	{
+		arduino:4,
+		descrip:"trastero",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "movimiento",
+				nombre:"trast-mov",
+				descrip:"Presencia trastero",
+				sensor:1
+			}
+		]
+	},{
+		arduino:5,
+		descrip:"comedor",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "valor",
+				nombre:"comedor-temp",
+				descrip:"Temperatura salón",
+				sensor:1
+			},{
+				codigo:2,
+				alarma: "movimiento",
+				nombre:"comedor-mov",
+				descrip:"Presencia salón",
+				sensor:1
+			}
+		]
+	},{
+		arduino:6,
+		descrip:"dormitorio",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "valor",
+				nombre:"dorm-temp",
+				descrip:"Temperatura dormitorio",
+				sensor:1
+			},{
+				codigo:2,
+				alarma: "movimiento",
+				nombre:"dorm-mov",
+				descrip:"Presencia dormitorio",
+				sensor:1
+			}
+		]
+	},{
+		arduino:7,
+		descrip:"aseo",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "activo",
+				nombre:"aseo-humedad",
+				descrip:"Humedad aseo",
+				sensor:1
+			},
+			{
+				codigo:2,
+				alarma: "movimiento",
+				nombre:"aseo-mov",
+				descrip:"Presencia aseo",
+				sensor:1
+			},
+			{
+				codigo:3,
+				alarma: "valor",
+				nombre:"aseo-temp",
+				descrip:"Temperatura aseo",
+				sensor:1
+			}
+		]
+	},
+	{
+		arduino:8,
+		descrip:"salon-cortinas",
+		maczb: "0013A20040F2A7C8",
+		elementos:[
+			{
+				codigo:1,
+				alarma: "",
+				nombre:"cort-luz",
+				descrip:"Detector luz",
+				sensor:1
+			},
+			{
+				codigo:2,
+				alarma: "persiana",
+				nombre:"cort-posicion",
+				descrip:"Posición de las cortinas",
+				sensor:1
+			},
+			{
+				codigo:9,
+				nombre:"cort-motor",
+				descrip:"Motor cortinas",
+				sensor:0
+			}
+		]
+	},
+	{
+		arduino:9,
+		descrip:"general",
+		elementos:[
+			{
+				codigo:8,
+				nombre:"panel",
+				descrip:"Panel informativo",
+				sensor:0
+			},
+			{
+				codigo:9,
+				nombre:"alarma",
+				descrip:"Luz alarma",
+				sensor:0
+			}
+		]
+	}
+]
