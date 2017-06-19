@@ -72,7 +72,7 @@ var valoresArduinos=[
 			{
 				codigo:2,
 				alarma: "tiempo",
-				limite: 8,
+				limite: 1,
 				nombre:"coci-freg-caudal",
 				descrip:"Caudal fregadero",
 				sensor:1

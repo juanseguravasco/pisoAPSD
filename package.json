@@ -12,5 +12,18 @@
     "arduino"
   ],
   "author": "Juan Segura",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "jquery-ui": "^1.12.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juanseguravasco/pisoAPSD.git"
+  },
+  "bugs": {
+    "url": "https://github.com/juanseguravasco/pisoAPSD/issues"
+  },
+  "homepage": "https://github.com/juanseguravasco/pisoAPSD#readme"
 }

@@ -38,7 +38,7 @@ $(function(){
 			data: {arduino: 8, sensor: 9, valor: valor},
 			method: 'POST'
 		}).then(function(res) {
-			pintaPersiana(res.trim());
+			procesaRespuesta(res);
 		}, function(res) {
 			console.log(res);
 		})
@@ -77,48 +77,19 @@ function camelCased(cadena) {
 
 function pideDatos() {
 	var arduinos=[2,3,4,5,6,7,8,"A","B","C"];
-	var arduinos=[2, 3, 8, "B"];
-//	var arduinos=[2, 3];
+	var arduinos=[2, 3, 8, "C"];
+//	var arduinos=[2];
 
 	console.log("Pidiendo...");
 	var mal=0;
 	for (var i in arduinos) {
 		$.ajax({
+//			async: false,
 			url: servidor,
 			data: {arduino: arduinos[i], sensor: 0, valor: 0},
 			method: 'POST'
 		}).then(function(res) {
-			if (res.trim().charAt(1)!=":") {
-				mal++;
-				return;
-			}
-		  // separamos la cadena por espacio por si se ha leído más de 1 arduino
-		  res.trim().split(" ").forEach(function(dato) {
-			var arduino=dato.trim().split(":")[0];
-			if (arduino.length != 1) {
-				console.log("Respuesta errónea del arduino "+arduinos[i]+": "+res);
-			} else {
-				switch (arduino) {
-					case "2":
-					case "3":
-					case "4":
-					case "5":
-					case "6":
-					case "7":
-					case "8":
-						muestraSensoresNormal(res.trim());
-						break;
-					case "A":
-					case "B":
-					case "C":
-						controlaPuerta(res.trim());
-						break;
-					default:
-						console.log("Respuesta errónea de un arduino: "+res);
-				}
-
-			}
-		  })
+			procesaRespuesta(res);
 		}, function(res) {
 			console.log("Respuesta errónea de un arduino: "+res);
 		})
@@ -129,9 +100,14 @@ function pideDatos() {
 
 function muestraSensoresNormal(cadenaDatos) {
 	var i, datosSensor, sensor, valor, nombreSensor, datosArduino;
+	// limpiamos un poco la cadena. A veces pone -- en vez de -
 	cadenaDatos=cadenaDatos.replace('--','-').replace(' ','');
 	var respuesta=cadenaDatos.split(":");
-	// limpiamos un poco la cadena. A veces pone -- en vez de -
+	if (respuesta[0]=="8") {
+		// Es el arduino de la persiana y pintamos su valor
+		pintaPersiana(respuesta[1].split("-")[1]);
+		return;
+	}
 	datosArduino=getSensores(respuesta[0]);
 	for (i=1; i<respuesta.length; i++) {
 		datosSensor=respuesta[i].split("-")[0];
@@ -215,40 +191,58 @@ function controlaPuerta(cadenaDatos) {
 	var abrir=0;
 	var nombreOpcion="";
 	var respuesta=cadenaDatos.trim().split(":");
-	var valor=respuesta[1].split("-")[1];
-	if (!valor || valor=="n" || valor=="0") {
-		// No hay intento de abrir
-		return;
-	}
-	switch (respuesta[0]) {
-		case "A":
-			nombreOpcion="huella";
-			break;
-		case "B":
-			nombreOpcion="teclado";
-			break;
-		case "C":
-			nombreOpcion="RFID";
-			break;
-	}
-	$('#entrada-'+nombreOpcion).prop('checked','checked');
-	$('#valor-'+nombreOpcion).text(valor); //respuesta[1]);
-
-	$.ajax({
-		url: 'app/compruebaCodigo.php',
-		data: {campo: nombreOpcion.toLowerCase(), codigo: valor}, //respuesta[1]},
-		method: 'POST'
-	}).then(function(res) {
-		if (res==0) {
-			$('#valor-'+nombreOpcion).removeClass("verde").addClass("rojo");
-		} else {
-			$('#valor-'+nombreOpcion).text(valor+"-"+res).removeClass("rojo").addClass("verde");
-			abrePuerta(respuesta[0]);
+	// Si es la respuesta de puerta abierta la pintamos
+	if (respuesta[1]=="On") {
+		// Pintamos la puerta abierta y llamamos a una  función en 4 seg. que pinte la puerta cerrada
+		$('#btn-ent-abrir').attr('disabled', 'disabled');
+		$('#img-puerta').attr('src','images/exit.png');
+		$('#img-puerta').parent().removeClass("rojo").addClass("verde");
+		setTimeout(function() {
+			$('#btn-ent-abrir').removeAttr('disabled');
+			$('#img-puerta').attr('src','images/enter.png');
+			$('#img-puerta').parent().removeClass("verde").addClass("rojo");
+		}, 2000);
+	} else if (respuesta[1]=="Off") {
+		$('#btn-ent-abrir').removeAttr('disabled');
+		$('#img-puerta').attr('src','images/enter.png');
+		$('#img-puerta').parent().removeClass("verde").addClass("rojo");
+	} else {
+		// Si es el dato leído lo procesamos
+		var valor=respuesta[1].split("-")[1];
+		if (!valor || valor=="n" || valor=="0") {
+			// No hay intento de abrir
+			return;
 		}
-	}, function(res) {
-		console.log("error servidor BBDD: "+res);
-	});
+		switch (respuesta[0]) {
+			case "A":
+				nombreOpcion="huella";
+				break;
+			case "B":
+				nombreOpcion="teclado";
+				break;
+			case "C":
+				nombreOpcion="RFID";
+				break;
+		}
+		$('#entrada-'+nombreOpcion).prop('checked','checked');
+		$('#valor-'+nombreOpcion).text("("+valor+")"); //respuesta[1]);
 
+		$.ajax({
+			url: 'app/compruebaCodigo.php',
+			data: {campo: nombreOpcion.toLowerCase(), codigo: valor}, //respuesta[1]},
+			method: 'POST'
+		}).then(function(res) {
+			if (res==0) {
+				$('#valor-'+nombreOpcion).removeClass("verde").addClass("rojo");
+			} else {
+				$('#valor-'+nombreOpcion).text(res).removeClass("rojo").addClass("verde");
+				abrePuerta(respuesta[0]);
+			}
+		}, function(res) {
+			console.log("error servidor BBDD: "+res);
+		});
+
+	}
 }
 
 function getSensor(campo, valor, sensores) {
@@ -288,7 +282,7 @@ function activaAlarma(sensor, valor) {
 		var tiempo = new Date();
 		var ahora = tiempo.getHours()+':'+tiempo.getMinutes()+':'+tiempo.getSeconds();
 		$('#img-alarma').attr('src', 'images/luz-roja.png');
-		$('#txt-alarma').prepend(ahora+' - '+sensor.descrip+': '+valor+(sensor.limite?' (limite '+sensor.limite+')':'')+'<br>');
+//		$('#txt-alarma').prepend(ahora+' - '+sensor.descrip+': '+valor+(sensor.limite?' (limite '+sensor.limite+')':'')+'<br>');
 		$('#btn-reset-alarma').show();
 	}
 }
@@ -334,20 +328,59 @@ function abrePuerta(arduino) {
 		data: {arduino: arduino, sensor: 9, valor: 1},
 		method: 'POST'
 	}).then(function(res) {
-		// Pintamos la puerta abierta y llamamos a una  función en 4 seg. que pinte la puerta cerrada
-		if (res.trim()=="On") {
-			$('#btn-ent-abrir').attr('disabled', 'disabled');
-			$('#img-puerta').attr('src','images/exit.png');
-			$('#img-puerta').parent().removeClass("rojo").addClass("verde");
-			setTimeout(function() {
-				$('#btn-ent-abrir').removeAttr('disabled');
-				$('#img-puerta').attr('src','images/enter.png');
-				$('#img-puerta').parent().removeClass("verde").addClass("rojo");
-			}, 2000);
-		}
-		console.log(res);
+		consle.log(res);
+		procesaRespuesta(res);
 	}, function(res) {
 		alert(res);
-	})
+	});
+	// Como ahora no llega la respuesta marcamos a pelo que se abre
+		// Pintamos la puerta abierta y llamamos a una  función en 4 seg. que pinte la puerta cerrada
+		$('#btn-ent-abrir').attr('disabled', 'disabled');
+		$('#img-puerta').attr('src','images/exit.png');
+		$('#img-puerta').parent().removeClass("rojo").addClass("verde");
+		setTimeout(function() {
+			$('#btn-ent-abrir').removeAttr('disabled');
+			$('#img-puerta').attr('src','images/enter.png');
+			$('#img-puerta').parent().removeClass("verde").addClass("rojo");
+		}, 2000);
+}
 
+function procesaRespuesta(res) {
+	res=res.trim();
+	if (res.charAt(res.length-1)==";")
+		res=res.substr(0,res.length-1);		// Quitamos el ; final
+	// separamos la cadena por ; por si se ha leído más de 1 arduino
+	res.split(";").forEach(function(dato) {
+		dato=dato.trim();
+		if (dato.charAt(1)!=":") {
+			return;
+		}
+var tiempo = new Date();
+var ahora = tiempo.getHours()+':'+tiempo.getMinutes()+':'+tiempo.getSeconds();
+$('#txt-alarma').prepend(ahora+' - '+res+'<br>');
+		var arduino=dato.split(":")[0];
+		if (arduino.length != 1) {
+			console.log("Respuesta errónea del arduino "+arduino+": "+res);
+		} else {
+			switch (arduino) {
+				case "2":
+				case "3":
+				case "4":
+				case "5":
+				case "6":
+				case "7":
+				case "8":
+					muestraSensoresNormal(dato);
+					break;
+				case "A":
+				case "B":
+				case "C":
+					controlaPuerta(dato);
+					break;
+				default:
+					console.log("Respuesta errónea de un arduino: "+res);
+			}
+
+		}
+	})
 }

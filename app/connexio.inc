@@ -1,6 +1,6 @@
 <?php
 	$servidor = "localhost";
-	$usuario = "pi";
+	$usuario = "root";
 	$contrasenya = "pisset";
 	$basedades = "piso_APSD";
 ?>
